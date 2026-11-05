@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101d32">
+  <title>CA Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" data-page="dashboard">
+        <span class="brand-icon">CA</span>
+        <span><strong>CA Tracker</strong><small>Academic progress</small></span>
+      </a>
+      <nav class="side-nav">
+        <button class="nav-link active" data-page="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-link" data-page="upload"><span>＋</span> Upload CA</button>
+        <button class="nav-link" data-page="check"><span>▥</span> Check CA</button>
+        <button class="nav-link" data-page="courses"><span>▤</span> My courses</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-note"><span>●</span><div><b>Your data stays here</b><small>Saved on this device</small></div></div>
+        <button class="text-button" id="exportBtn">↓ Export backup</button>
+        <button class="text-button" id="importBtn">↑ Import backup</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-brand" data-page="dashboard"><span class="brand-icon">CA</span><b>CA Tracker</b></button>
+        <div class="topbar-right"><span class="local-label"><i></i> Saved on this device</span></div>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="page-heading">
+          <div><p class="eyebrow">YOUR ACADEMIC OVERVIEW</p><h1>Dashboard</h1><p class="muted">Keep track of every mark, one course at a time.</p></div>
+          <button class="primary-btn" data-page="upload">＋ Upload CA</button>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><span class="stat-label">Courses</span><strong id="statCourses">0</strong><small>Courses being tracked</small></article>
+          <article class="stat-card"><span class="stat-label">CA accumulated</span><strong id="statAverage">—</strong><small id="statAverageSub">Across entered courses</small></article>
+          <article class="stat-card"><span class="stat-label">On target</span><strong id="statTarget">0</strong><small>Courses at 20/40 or more</small></article>
+        </div>
+        <div class="section-heading"><div><h2>Course progress</h2><p class="muted">Your CA results, calculated individually.</p></div><button class="quiet-btn" data-page="check">View all →</button></div>
+        <div id="dashboardCourses" class="course-list"></div>
+        <div class="empty-state" id="dashboardEmpty"><div class="empty-icon">▤</div><h3>No courses yet</h3><p>Add your first course and start recording your CA marks.</p><button class="primary-btn" data-page="courses">＋ Add a course</button></div>
+      </section>
+
+      <section class="page" id="page-upload">
+        <div class="page-heading"><div><p class="eyebrow">ASSESSMENT ENTRY</p><h1>Upload CA</h1><p class="muted">Enter the percentages you received. We'll calculate the weighted marks.</p></div></div>
+        <form id="caForm" class="panel form-panel">
+          <input type="hidden" id="editId">
+          <div class="form-grid">
+            <label class="field full"><span>Course</span><select id="courseSelect" required><option value="">Select a course</option></select><small>Don't see your course? <button type="button" class="inline-link" data-page="courses">Add it here</button>.</small></label>
+            <label class="field"><span>Term</span><select id="termSelect" required><option value="1">Term 1 · 10 marks</option><option value="2">Term 2 · 14 marks</option><option value="3">Term 3 · 16 marks</option></select></label>
+            <div class="field"><span>Assessment breakdown</span><div class="weight-card" id="weightInfo">Test: 8 marks · Assignment: 2 marks</div></div>
+            <label class="field"><span>Test percentage (%)</span><input id="testPercent" type="number" min="0" max="100" step="0.01" placeholder="e.g. 75" required><small>Enter a percentage from 0 to 100.</small></label>
+            <label class="field"><span>Assignment percentage (%)</span><input id="assignmentPercent" type="number" min="0" max="100" step="0.01" placeholder="e.g. 80" required><small>Enter a percentage from 0 to 100.</small></label>
+          </div>
+          <div class="calculation-preview" id="calculationPreview"><span>Weighted CA preview</span><strong>Enter both percentages</strong><small>Your converted mark will appear here.</small></div>
+          <div class="form-actions"><button type="button" class="quiet-btn" data-page="dashboard">Cancel</button><button class="primary-btn" type="submit" id="saveBtn">Save CA marks</button></div>
+          <p class="form-message" id="formMessage" role="status"></p>
+        </form>
+      </section>
+
+      <section class="page" id="page-check">
+        <div class="page-heading"><div><p class="eyebrow">RESULTS & TARGETS</p><h1>Check CA</h1><p class="muted">See what you've earned and what you still need.</p></div><button class="primary-btn" data-page="upload">＋ Upload CA</button></div>
+        <div id="checkCourses" class="course-list"></div>
+        <div class="empty-state" id="checkEmpty"><div class="empty-icon">▥</div><h3>Nothing to show yet</h3><p>Add a course and upload assessment marks to see your progress.</p><button class="primary-btn" data-page="upload">Upload your first CA</button></div>
+      </section>
+
+      <section class="page" id="page-courses">
+        <div class="page-heading"><div><p class="eyebrow">COURSE MANAGEMENT</p><h1>My courses</h1><p class="muted">Add and manage the courses you want to track.</p></div></div>
+        <form id="courseForm" class="panel add-course-form">
+          <label class="field"><span>New course name</span><input id="newCourse" type="text" maxlength="70" placeholder="e.g. Engineering Mathematics" required></label>
+          <button class="primary-btn" type="submit">＋ Add course</button>
+        </form>
+        <div id="courseManagement" class="managed-courses"></div>
+        <div class="empty-state" id="coursesEmpty"><div class="empty-icon">＋</div><h3>No courses added</h3><p>Add your first course above.</p></div>
+      </section>
+
+      <footer class="footer-note">CA Tracker · Personal academic progress tool <span>CA structure: 40 marks total</span></footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
